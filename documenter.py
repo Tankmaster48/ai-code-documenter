@@ -10,7 +10,7 @@ GO_LANGUAGE = Language(tree_sitter_go.language())
 parser = Parser()
 parser.language = GO_LANGUAGE
 
-root_dir = "/home/rynko/Documents/Projects/ndnd2/"
+root_dir = "/home/rynko/Projects/ndnd2"
 
 def main():
     for dirpath, _, filenames in os.walk(root_dir):
@@ -45,7 +45,7 @@ def process_file(code: bytes, path: str, contents: list):
         try:
             receiver_node = node.child_by_field_name("receiver")
             if not receiver_node:
-                return None
+               return None
 
             param_list = receiver_node.child(1)
             if not param_list:
@@ -71,10 +71,10 @@ def process_file(code: bytes, path: str, contents: list):
         func_code = code[node.start_byte:node.end_byte].decode()
 
         brief = generate_func_brief(func_code) + '\n'
-        brief = "AI GENERATED: " + brief
+        brief = "(AI GENERATED DESCRIPTION): " + brief
 
         # insert the generated brief into the file
-        contents.insert(node.start_point.row + offset, brief)
+        contents.insert(node.start_point.row + offset, "// " + brief)
 
         offset += 1
 

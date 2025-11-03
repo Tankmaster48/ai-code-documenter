@@ -1,14 +1,8 @@
 import os, time
-from openai import OpenAI
 
-# Set OpenAI's API key and API base to use vLLM's API server.
-openai_api_key = "EMPTY"
-openai_api_base = "http://localhost:8000/v1"
+import ollama
 
-client = OpenAI(
-    api_key=openai_api_key,
-    base_url=openai_api_base,
-)
+model = "gpt-oss:20b"
 
 SYSTEM_PROMPT = "You are a documentation writer who writes documentation for the Named-Data Networking Go codebase"
 DOCUMENTATION_PROMPT = """{func_content}
@@ -42,22 +36,17 @@ def generate_func_brief(func_code):
         {"role" : "system", "content" : SYSTEM_PROMPT}
     ]
 
-    func_content = get_func()
-
     messages.append(
-        {"role" : "user", "content" : DOCUMENTATION_PROMPT.format(func_content=func_content)}
+        {"role" : "user", "content" : DOCUMENTATION_PROMPT.format(func_content=func_code)}
     )
 
     return llm_call(messages)
 
 
 def llm_call(messages):
-    completion = client.chat.completions.create(
-        model="Qwen/Qwen3-32B-AWQ",
-        messages=messages,
-    )
+    response = ollama.chat(model, messages=messages).message.content
 
-    return completion.choices[0].message.content
+    return response
     
 if __name__ == '__main__':
     main()
